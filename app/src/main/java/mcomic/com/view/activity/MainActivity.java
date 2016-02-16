@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity
         if(getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT){
             stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
         }else {
-            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
+            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_landscape);
         }
         stubContainerDetalheManga.inflate();
     }

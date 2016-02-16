@@ -97,7 +97,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         @Override
         public int getCount() {
-            return capitulo.getTotalPaginas();
+            return capitulo.getTotalPaginas() + 1;
         }
 
         @Override
@@ -128,7 +128,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                 if(capitulo.getPages().size() == 0){
                     capitulo.setTotalPaginas(serviceCentralManga.getMaxPages(manga, capitulo));
                 }
-                for(int p = 1; p < capitulo.getTotalPaginas(); p++){
+                for(int p = 1; p <= capitulo.getTotalPaginas(); p++){
                     if(!this.isCancelled()){
                         publishProgress(serviceCentralManga.getPage(manga, capitulo, p));
                     } else {
@@ -153,6 +153,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                 mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
                 mPager.setAdapter(mPagerAdapter);
             }
+
             if(mPagerAdapter != null){
                 mPagerAdapter.notifyDataSetChanged();
             }
