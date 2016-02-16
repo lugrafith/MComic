@@ -3,6 +3,7 @@ package mcomic.com.view.activity;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -18,10 +19,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Display;
 import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
@@ -57,7 +61,7 @@ public class MainActivity extends AppCompatActivity
     private ServiceTask serviceTask;
     private TabHost tabHost;
     private ServiceTaskMangaInfo serviceTaskMangaInfo;
-
+    private ViewStub stubContainerDetalheManga;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,17 +75,6 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
-        /*FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab_filter);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                //      .setAction("Action", null).show();
-            }
-        });
-
-        fab.setBackgroundTintList(new ColorStateList(new int[][]{new int[]{0}}, new int[]{Color.BLACK}));
-        */
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -129,7 +122,46 @@ public class MainActivity extends AppCompatActivity
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.BLACK);
         tabHost.setOnTabChangedListener(this);
 
+        stubContainerDetalheManga = (ViewStub) findViewById(R.id.linearLayout_containerDetalheManga);
 
+        if(getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT){
+            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
+        }else {
+            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
+        }
+        stubContainerDetalheManga.inflate();
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
+        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_landscape);
+        }
+        //TODO
+        super.onConfigurationChanged(newConfig);
+    }
+
+
+    public int getScreenOrientation()
+    {
+        Display getOrient = getWindowManager().getDefaultDisplay();
+        int orientation = Configuration.ORIENTATION_UNDEFINED;
+        if(getOrient.getWidth()==getOrient.getHeight()){
+            orientation = Configuration.ORIENTATION_SQUARE;
+        } else{
+            if(getOrient.getWidth() < getOrient.getHeight()){
+                orientation = Configuration.ORIENTATION_PORTRAIT;
+            }else {
+                orientation = Configuration.ORIENTATION_LANDSCAPE;
+            }
+        }
+        return orientation;
+    }
+    @Override
+    public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
+        super.onSaveInstanceState(outState, outPersistentState);
     }
 
     @Override
@@ -151,6 +183,7 @@ public class MainActivity extends AppCompatActivity
             if(tabHost.getCurrentTab() > 0){
                 tabHost.setCurrentTab(tabHost.getCurrentTab() - 1);
             }else {
+                cancelServices();
                 super.onBackPressed();
             }
         }
@@ -253,8 +286,8 @@ public class MainActivity extends AppCompatActivity
         if (item.getManga().getImageCover() != null) {
             tabHost.setCurrentTab(1);
             Drawable backgroundF = new BitmapDrawable(getResources(), item.getManga().getImageCover());
-            ProgressBar progressBarLoadImage = (ProgressBar) findViewById(R.id.progressBar_loadImage);
-            progressBarLoadImage.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+            //ProgressBar progressBarLoadImage = (ProgressBar) findViewById(R.id.progressBar_loadImage);
+            //progressBarLoadImage.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
 
             TextView textViewTitle = (TextView) findViewById(R.id.textView_title);
             ImageButton cover = (ImageButton) findViewById(R.id.imageButton_cover);
@@ -272,18 +305,17 @@ public class MainActivity extends AppCompatActivity
                 gridViewCategorias.setAdapter(generoAdapter);
             }
             textViewSinopse.setText(item.getManga().getSinopse());
-            progressBarLoadImage.setVisibility(View.INVISIBLE);
+            //progressBarLoadImage.setVisibility(View.INVISIBLE);
 
             cover.setOnClickListener(getClickCapitulos(item));
             ler.setOnClickListener(getClickCapitulos(item));
-
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }
     }
 
     private View.OnClickListener getClickCapitulos(final ViewMangaItem item){
-        Activity activity = this;
+        final Activity activity = this;
         return  new View.OnClickListener() {
             @Override
             public void onClick(View v) {
