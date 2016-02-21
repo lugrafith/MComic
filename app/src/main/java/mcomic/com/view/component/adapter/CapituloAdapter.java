@@ -3,6 +3,8 @@ package mcomic.com.view.component.adapter;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,6 +12,7 @@ import android.widget.BaseAdapter;
 import android.widget.CheckBox;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -38,7 +41,7 @@ public class CapituloAdapter extends BaseAdapter {
         this.activity = activity;
         this.manga = manga;
         itens = new ArrayList<>();
-        for(int x = capitulos.size() - 1; x >= 0; x--){
+        for(int x = 0; x <= capitulos.size() -1; x++){
             itens.add(new ViewCapituloItem(capitulos.get(x)));
         }
     }
@@ -67,8 +70,13 @@ public class CapituloAdapter extends BaseAdapter {
         itens.get(position).setCheckBoxLido((CheckBox) view.findViewById(R.id.checkBox_lido));
         itens.get(position).setTextViewCapitulo((TextView) view.findViewById(R.id.textView_capitulo));
         itens.get(position).setButtomLer((ImageView) view.findViewById(R.id.imageButton_ler));
+        itens.get(position).setProgressBar((ProgressBar) view.findViewById(R.id.progressBar));
         itens.get(position).getTextViewCapitulo().setText(itens.get(position).getCapitulo().getNome());
         itens.get(position).getButtomLer().setOnClickListener(getPagesCapitulo(itens.get(position)));
+
+        itens.get(position).getProgressBar().getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+        itens.get(position).getProgressBar().getProgressDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
+        itens.get(position).getProgressBar().setProgress(1);
         return view;
     }
 

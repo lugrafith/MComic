@@ -6,7 +6,8 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="mcomic.com.view.activity.MainActivity"
-    tools:showIn="@layout/app_bar_main">
+    tools:showIn="@layout/app_bar_main"
+    android:background="@color/black">
 
 
     <ProgressBar
@@ -15,6 +16,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/progressBar_loading"
         android:visibility="invisible"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text=""
+        android:id="@+id/textView_info"
+        android:textColor="@color/grey"
+        android:layout_gravity="center_horizontal"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true" />
 
@@ -46,6 +58,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
+
                     <GridView
                         android:layout_width="fill_parent"
                         android:layout_height="fill_parent"
@@ -64,24 +77,13 @@
                     android:orientation="vertical">
                     <!--Start Detalhe Manga -->
                     <ViewStub
-                        android:inflatedId="@layout/detalhe_manga_landscape"
+                        android:inflatedId="@layout/layout_detalhe_manga_portrait_landscape"
                         android:id="@+id/linearLayout_containerDetalheManga"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"/>
                     <!-- END Detalhe Manga -->
                 </LinearLayout>
 
-                <LinearLayout
-                    android:id="@+id/linearLayout3"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
-                    <ListView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/listView_capitulos"
-                        android:layout_gravity="center_horizontal" />
-                </LinearLayout>
             </FrameLayout>
         </LinearLayout>
     </TabHost>

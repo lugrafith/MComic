@@ -72,7 +72,7 @@ public class MangaAdapter extends BaseAdapter {
         viewMangaItems.get(position).setBackground((RelativeLayout) view.findViewById(R.id.background));
         viewMangaItems.get(position).setTextView((TextView) view.findViewById(R.id.textView_mangaTitle));
         viewMangaItems.get(position).setProgressBar((ProgressBar) view.findViewById(R.id.progressBar_loadInfo));
-        viewMangaItems.get(position).getProgressBar().getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        viewMangaItems.get(position).getProgressBar().getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         viewMangaItems.get(position).getTextView().setText(viewMangaItems.get(position).getManga().getTitle());
 
         if(viewMangaItems.get(position).getManga().getImageCover() != null){
@@ -80,6 +80,7 @@ public class MangaAdapter extends BaseAdapter {
             viewMangaItems.get(position).getBackground().setBackground(backgroundF);
             viewMangaItems.get(position).getProgressBar().setVisibility(View.INVISIBLE);
         }
+
         return view;
     }
 }

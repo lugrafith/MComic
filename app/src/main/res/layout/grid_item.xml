@@ -20,7 +20,7 @@
             android:textAlignment="center"
             android:textColor="@color/white"
             android:padding="5dp"
-            android:background="@color/black"
+            android:background="@drawable/background_gradient_1"
             android:id="@+id/textView_mangaTitle" />
 
         <ProgressBar

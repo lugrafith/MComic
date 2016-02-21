@@ -15,7 +15,7 @@ public class Manga extends AbstractModel{
 
 	private String sinopse;
 
-	private int ano;
+	private String ano;
 	
 	private Arte arte;
 	
@@ -86,14 +86,14 @@ public class Manga extends AbstractModel{
 	/**
 	 * @return the ano
 	 */
-	public int getAno() {
+	public String getAno() {
 		return ano;
 	}
 
 	/**
 	 * @param ano the ano to set
 	 */
-	public void setAno(int ano) {
+	public void setAno(String ano) {
 		this.ano = ano;
 	}
 

@@ -70,12 +70,12 @@ public final class CentralMangaParseUtil {
         }
         end = "</p>";
         manga.setSinopse(builder.substring(builder.indexOf(index) + index.length(), builder.indexOf(end, builder.indexOf(index) + index.length())));
-        manga.setSinopse(removeTagsHTML(manga.getSinopse()));
+        manga.setSinopse(removeTagsHTML(manga.getSinopse()).trim());
         System.out.println("- Sinopse : " + manga.getSinopse());
         //Ano
         index = "<h4>Ano</h4></div></div><div class=\"row\"><div class=\"col-xs-12 col-md-12\">";
         end = "</div>";
-        manga.setAno(Integer.parseInt(builder.substring(builder.indexOf(index) + index.length(), builder.indexOf(end, builder.indexOf(index) + index.length())).trim()));
+        manga.setAno(builder.substring(builder.indexOf(index) + index.length(), builder.indexOf(end, builder.indexOf(index) + index.length())).trim());
         System.out.println("- Ano			: " + manga.getAno());
         //Arte
         index = "<h4>Arte</h4></div></div><div class=\"row\"><div class=\"col-xs-12 col-md-12\">";

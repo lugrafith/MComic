@@ -1,17 +1,14 @@
 package mcomic.com.view.activity;
 
 import android.annotation.TargetApi;
-import android.app.Activity;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.PersistableBundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -19,9 +16,10 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Display;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -31,10 +29,9 @@ import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -45,16 +42,17 @@ import mcomic.com.core.ServiceTask;
 import mcomic.com.core.ServiceTaskMangaInfo;
 import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
+import mcomic.com.view.activity.fragment.ScreenSlidePagerActivity;
 import mcomic.com.view.component.adapter.CapituloAdapter;
 import mcomic.com.view.component.adapter.GeneroAdapter;
 import mcomic.com.view.component.adapter.MangaAdapter;
-import mcomic.com.view.component.itemAdapter.ViewCapituloItem;
 import mcomic.com.view.component.itemAdapter.ViewMangaItem;
 
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener, TabHost.OnTabChangeListener, AdapterView.OnItemClickListener {
+        implements NavigationView.OnNavigationItemSelectedListener, TabHost.OnTabChangeListener, AdapterView.OnItemClickListener, TextView.OnEditorActionListener {
 
+    private TextView info;
     private GridView gridViewMangas;
     private EditText editTextSearch;
     private ProgressBar progressBar;
@@ -81,6 +79,8 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
+        info = (TextView) findViewById(R.id.textView_info);
+
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -91,11 +91,12 @@ public class MainActivity extends AppCompatActivity
         setInfoManga();
 
         progressBar = (ProgressBar) findViewById(R.id.progressBar_loading);
-        progressBar.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         editTextSearch = (EditText) findViewById(R.id.editText_search);
 
-        editTextSearch.setOnEditorActionListener(getOnKeyListener());
-
+        //busca
+        editTextSearch.addTextChangedListener(getTextWatcher());
+        editTextSearch.setOnEditorActionListener(this);
 
         //Tabs
         tabHost = (TabHost) findViewById(R.id.tabHost);
@@ -110,28 +111,51 @@ public class MainActivity extends AppCompatActivity
         tab.setIndicator("");
         tabHost.addTab(tab);
 
-        tab = tabHost.newTabSpec("");
-        tab.setContent(R.id.linearLayout3);
-        tab.setIndicator("");
-        tabHost.addTab(tab);
-
         TabWidget tabWidget = tabHost.getTabWidget();
         for (int i = 0; i < tabWidget.getChildCount(); ++i){
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
         }
-        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.BLACK);
+        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED);
         tabHost.setOnTabChangedListener(this);
 
         stubContainerDetalheManga = (ViewStub) findViewById(R.id.linearLayout_containerDetalheManga);
-
-        if(getScreenOrientation() == Configuration.ORIENTATION_PORTRAIT){
-            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
-        }else {
-            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_landscape);
-        }
+        stubContainerDetalheManga.setLayoutResource(R.layout.layout_detalhe_manga_portrait_landscape);
         stubContainerDetalheManga.inflate();
     }
 
+
+
+    private TextWatcher getTextWatcher(){
+        return new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (filterLongEnough()) {
+                    search(editTextSearch);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+
+            private boolean filterLongEnough() {
+                return editTextSearch.getText().toString().trim().length() > 1;
+            }
+        };
+    }
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        if(event != null){
+            search(v);
+        }
+        return false;
+    }
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -226,28 +250,20 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    public TextView.OnEditorActionListener getOnKeyListener(){
-        final Activity activity = this;
-        return new TextView.OnEditorActionListener(){
-
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-
-                if(!editTextSearch.getEditableText().toString().equals("") && event != null){
-                    progressBar.setVisibility(View.VISIBLE);
-                    if(serviceTask != null){
-                        serviceTask.cancel(true);
-                    }
-                    serviceTaskMangaInfo.cancel(true);
-                    serviceTaskMangaInfo = new ServiceTaskMangaInfo(activity);
-                    serviceTask = new ServiceTask(new ServiceCentralManga(), activity);
-                    serviceTask.execute(editTextSearch.getEditableText().toString());
-                    tabHost.setCurrentTab(0);
-                }
-                return false;
+    private void search(TextView v){
+        if (!v.getEditableText().toString().equals("")) {
+            progressBar.setVisibility(View.VISIBLE);
+            if (serviceTask != null) {
+                serviceTask.cancel(true);
             }
-
-        };
+            serviceTaskMangaInfo.cancel(true);
+            serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
+            serviceTask = new ServiceTask(new ServiceCentralManga(), this);
+            serviceTask.execute(v.getEditableText().toString());
+            if (tabHost.getCurrentTab() != 0) {
+                tabHost.setCurrentTab(0);
+            }
+        }
     }
 
     public void cancelServices(){
@@ -263,10 +279,15 @@ public class MainActivity extends AppCompatActivity
         System.out.print("FINISH");
         gridViewMangas.setAdapter(new MangaAdapter(this, Aplication.getMangas()));
         setInfoManga();
+        if(Aplication.getMangas() == null || Aplication.getMangas().size() == 0){
+            info.setText("Nenhum manga encontrado com o titulo " + editTextSearch.getText());
+        }else {
+            info.setText("");
+        }
     }
 
     private void setInfoManga(){
-        serviceTaskMangaInfo.execute((MangaAdapter)gridViewMangas.getAdapter());
+        serviceTaskMangaInfo.execute((MangaAdapter) gridViewMangas.getAdapter());
     }
 
     @Override
@@ -274,7 +295,7 @@ public class MainActivity extends AppCompatActivity
         for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.TRANSPARENT); //unselected
         }
-        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.BLACK); // selected
+        tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); // selected
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
@@ -285,46 +306,60 @@ public class MainActivity extends AppCompatActivity
 
         if (item.getManga().getImageCover() != null) {
             tabHost.setCurrentTab(1);
-            Drawable backgroundF = new BitmapDrawable(getResources(), item.getManga().getImageCover());
-            //ProgressBar progressBarLoadImage = (ProgressBar) findViewById(R.id.progressBar_loadImage);
-            //progressBarLoadImage.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
 
-            TextView textViewTitle = (TextView) findViewById(R.id.textView_title);
-            ImageButton cover = (ImageButton) findViewById(R.id.imageButton_cover);
-            ImageButton ler = (ImageButton) findViewById(R.id.imageButton_ler);
-            TextView textViewAutor = (TextView) findViewById(R.id.textView_autor);
+            LinearLayout linearLayoutContainer = (LinearLayout) findViewById(R.id.linearLayout_containerDetalheManga);
+            ImageButton imageButtonIconRead = (ImageButton) findViewById(R.id.imageButton_icon_read);
+            ImageButton imageButtonShare = (ImageButton) findViewById(R.id.imageButton_share);
+            ImageButton imageButtonBack = (ImageButton) findViewById(R.id.imageButton_back);
+            TextView textViewMangaTitle = (TextView) findViewById(R.id.textView_title);
+            TextView textViewAutor= (TextView) findViewById(R.id.textView_autor);
             TextView textViewArte = (TextView) findViewById(R.id.textView_arte);
-            GridView gridViewCategorias = (GridView) findViewById(R.id.gridView_generos);
             TextView textViewSinopse = (TextView) findViewById(R.id.textView_sinopse);
-            textViewTitle.setText(item.getManga().getTitle() + " - " + item.getManga().getAno());
-            cover.setBackground(backgroundF);
-            textViewAutor.setText("autor " + item.getManga().getAutor().getNome());
-            textViewArte.setText("arte " + item.getManga().getArte().getNome());
+            GridView gridViewGenero = (GridView) findViewById(R.id.gridView_generos);
+            ListView listViewCapitulos = (ListView) findViewById(R.id.listView_capitulos);
+
+            Drawable backgroundF = new BitmapDrawable(getResources(), item.getManga().getImageCover());
+            linearLayoutContainer.setBackground(backgroundF);
+
+            textViewMangaTitle.setText(item.getManga().getTitle() + " - " + item.getManga().getAno());
+            textViewAutor.setText("Autor: " + item.getManga().getAutor().getNome());
+            textViewArte.setText("Arte: " + item.getManga().getArte().getNome());
             if (item.getManga().getGeneros().size() > 0) {
                 GeneroAdapter generoAdapter = new GeneroAdapter(this, item.getManga().getGeneros());
-                gridViewCategorias.setAdapter(generoAdapter);
+                gridViewGenero.setAdapter(generoAdapter);
             }
             textViewSinopse.setText(item.getManga().getSinopse());
-            //progressBarLoadImage.setVisibility(View.INVISIBLE);
+            imageButtonIconRead.setOnClickListener(getClickCapitulos(item));
 
-            cover.setOnClickListener(getClickCapitulos(item));
-            ler.setOnClickListener(getClickCapitulos(item));
+            //capitulos
+            CapituloAdapter capituloAdapter = new CapituloAdapter(MainActivity.this, item.getManga().getCapitulos(), item.getManga());
+            listViewCapitulos.setAdapter(capituloAdapter);
+
+            imageButtonBack.setOnClickListener(voltar());
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private View.OnClickListener voltar(){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onBackPressed();
+            }
+        };
+    }
+
     private View.OnClickListener getClickCapitulos(final ViewMangaItem item){
-        final Activity activity = this;
+        final MainActivity activity = this;
         return  new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                progressBar.setVisibility(View.VISIBLE);
-                tabHost.setCurrentTab(2);
-                progressBar.setVisibility(View.VISIBLE);
-                CapituloAdapter capituloAdapter = new CapituloAdapter(MainActivity.this, item.getManga().getCapitulos(), item.getManga());
-                ((ListView) findViewById(R.id.listView_capitulos)).setAdapter(capituloAdapter);
-                progressBar.setVisibility(View.INVISIBLE);
+                Intent intent = new Intent(activity, ScreenSlidePagerActivity.class);
+                intent.putExtra(Aplication.MANGA, item.getManga());
+                intent.putExtra(Aplication.CAPTIULO, item.getManga().getCapitulos().get(0));
+                activity.cancelServices();
+                activity.startActivity(intent);
             }
         };
     }
@@ -344,4 +379,5 @@ public class MainActivity extends AppCompatActivity
     public ServiceTask getServiceTask() {
         return serviceTask;
     }
+
 }

@@ -34,8 +34,7 @@ public class LoadContentActivity extends AppCompatActivity {
         setContentView(R.layout.activity_load_content);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);
         progressBar = (ProgressBar) findViewById(R.id.progressBar_loading);
-        progressBar.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
-
+        progressBar.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         ServiceCentralManga serviceCentralManga = new ServiceCentralManga();
         serviceTask = new ServiceTask(serviceCentralManga, this);
         serviceTask.execute("");
