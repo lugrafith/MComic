@@ -336,6 +336,8 @@ public class MainActivity extends AppCompatActivity
             listViewCapitulos.setAdapter(capituloAdapter);
 
             imageButtonBack.setOnClickListener(voltar());
+
+            ((LinearLayout) findViewById(R.id.linearLayout_box_capitulos)).setMinimumHeight(100 * item.getManga().getCapitulos().size());
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }

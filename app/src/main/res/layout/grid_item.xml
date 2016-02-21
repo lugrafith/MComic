@@ -16,7 +16,6 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="Title"
-            android:textSize="9dp"
             android:textAlignment="center"
             android:textColor="@color/white"
             android:padding="5dp"

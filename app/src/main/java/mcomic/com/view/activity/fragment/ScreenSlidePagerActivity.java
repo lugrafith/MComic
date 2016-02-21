@@ -64,9 +64,9 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         progressBarLoad = (ProgressBar) findViewById(R.id.progressBar_loading);
         textViewPageInfo = (TextView) findViewById(R.id.textView_pageInfo);
-        progressBarLoad.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        progressBarLoad.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
 
-        textViewPageInfo.setText("aguarde...");
+        textViewPageInfo.setText("Aguarde...");
         searchPages = new SearchPages();
         searchPages.execute();
     }

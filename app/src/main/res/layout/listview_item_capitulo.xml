@@ -15,14 +15,13 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textAppearance="?android:attr/textAppearanceSmall"
             android:text="capitulo"
             android:layout_marginLeft="5dp"
             android:textColor="@color/white"
             android:id="@+id/textView_capitulo"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
-            android:textSize="10dp"
             />
         <CheckBox
             android:layout_width="wrap_content"
