@@ -55,7 +55,7 @@ public class ScreenSlidePageFragment extends Fragment {
         ViewGroup rootView = (ViewGroup) inflater.inflate(R.layout.fragment_screen_slide_page_fragment, container, false);
 
         progressBarImage = (ProgressBar) rootView.findViewById(R.id.progressBar_loadImage);
-        progressBarImage.getIndeterminateDrawable().setColorFilter(Color.BLACK, PorterDuff.Mode.SRC_IN);
+        progressBarImage.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         imageViewPage = (ImageView) rootView.findViewById(R.id.imageView_page);
         pageInfo = (TextView) rootView.findViewById(R.id.textView_pageInfo);
         if (page != null && page.getBitmapImage() != null){

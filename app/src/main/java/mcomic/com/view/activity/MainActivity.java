@@ -32,6 +32,7 @@ import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
@@ -305,6 +306,9 @@ public class MainActivity extends AppCompatActivity
         ViewMangaItem item = (ViewMangaItem) parent.getAdapter().getItem(position);
 
         if (item.getManga().getImageCover() != null) {
+            ((LinearLayout) findViewById(R.id.linearLayout_containerList)).setMinimumHeight(95 * item.getManga().getCapitulos().size());
+            ((ScrollView) findViewById(R.id.scrollView_container)).setScrollX(0);
+            ((ScrollView) findViewById(R.id.scrollView_container)).setScrollY(0);
             tabHost.setCurrentTab(1);
 
             LinearLayout linearLayoutContainer = (LinearLayout) findViewById(R.id.linearLayout_containerDetalheManga);
@@ -334,10 +338,8 @@ public class MainActivity extends AppCompatActivity
             //capitulos
             CapituloAdapter capituloAdapter = new CapituloAdapter(MainActivity.this, item.getManga().getCapitulos(), item.getManga());
             listViewCapitulos.setAdapter(capituloAdapter);
-
             imageButtonBack.setOnClickListener(voltar());
 
-            ((LinearLayout) findViewById(R.id.linearLayout_box_capitulos)).setMinimumHeight(100 * item.getManga().getCapitulos().size());
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }

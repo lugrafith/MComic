@@ -41,6 +41,7 @@
         </RelativeLayout>
 
         <ScrollView
+            android:id="@+id/scrollView_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
 
@@ -206,12 +207,16 @@
                                     android:text="Capitulos"
                                     android:textAppearance="?android:attr/textAppearanceSmall"
                                     android:textColor="@color/grey" />
-
-                                <ListView
-                                    android:id="@+id/listView_capitulos"
+                                <LinearLayout
+                                    android:id="@+id/linearLayout_containerList"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
-                                    android:layout_gravity="center_horizontal" />
+                                    android:orientation="horizontal">
+                                    <ListView
+                                        android:id="@+id/listView_capitulos"
+                                        android:layout_width="match_parent"
+                                        android:layout_height="wrap_content" />
+                                </LinearLayout>
 
                             </LinearLayout>
                         </RelativeLayout>
