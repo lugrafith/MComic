@@ -23,6 +23,7 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.AdapterView;
@@ -30,6 +31,7 @@ import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
@@ -306,7 +308,6 @@ public class MainActivity extends AppCompatActivity
         ViewMangaItem item = (ViewMangaItem) parent.getAdapter().getItem(position);
 
         if (item.getManga().getImageCover() != null) {
-            ((LinearLayout) findViewById(R.id.linearLayout_containerList)).setMinimumHeight(95 * item.getManga().getCapitulos().size());
             ((ScrollView) findViewById(R.id.scrollView_container)).setScrollX(0);
             ((ScrollView) findViewById(R.id.scrollView_container)).setScrollY(0);
             tabHost.setCurrentTab(1);
@@ -338,8 +339,20 @@ public class MainActivity extends AppCompatActivity
             //capitulos
             CapituloAdapter capituloAdapter = new CapituloAdapter(MainActivity.this, item.getManga().getCapitulos(), item.getManga());
             listViewCapitulos.setAdapter(capituloAdapter);
+            //voltar
             imageButtonBack.setOnClickListener(voltar());
-
+            //size ListView
+            ListAdapter adapter = listViewCapitulos.getAdapter();
+            int totalHeight = 0;
+            for (int i = 0; i < adapter.getCount(); i++) {
+                View listItem = adapter.getView(i, null, listViewCapitulos);
+                listItem.measure(0, 0);
+                totalHeight += listItem.getMeasuredHeight();
+            }
+            ViewGroup.LayoutParams par = listViewCapitulos.getLayoutParams();
+            par.height = totalHeight + (listViewCapitulos.getDividerHeight() * (adapter.getCount() - 1));
+            listViewCapitulos.setLayoutParams(par);
+            listViewCapitulos.requestLayout();
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }
