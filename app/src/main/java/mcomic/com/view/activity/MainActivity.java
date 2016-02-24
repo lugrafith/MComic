@@ -162,9 +162,7 @@ public class MainActivity extends AppCompatActivity
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
-            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_portrait);
         } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
-            stubContainerDetalheManga.setLayoutResource(R.layout.detalhe_manga_landscape);
         }
         //TODO
         super.onConfigurationChanged(newConfig);
