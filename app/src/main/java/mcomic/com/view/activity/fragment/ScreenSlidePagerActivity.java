@@ -67,7 +67,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         progressBarLoad.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
 
         textViewPageInfo.setText("Aguarde...");
-        searchPages = new SearchPages();
+        searchPages = new SearchPages(this);
         searchPages.execute();
     }
 
@@ -83,14 +83,30 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
     public class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
 
-        public ScreenSlidePagerAdapter(android.support.v4.app.FragmentManager fm) {
+        private ScreenSlidePagerActivity activity;
+
+        public ScreenSlidePagerAdapter(android.support.v4.app.FragmentManager fm, ScreenSlidePagerActivity activity) {
             super(fm);
+            this.activity = activity;
         }
 
         @Override
         public Fragment getItem(int position) {
             if(capitulo.getPages().size() > position){
                 return new ScreenSlidePageFragment(capitulo, capitulo.getPages().get((position)));
+            }else if(capitulo.getPages().size() == position && capitulo.getTotalPaginas() == capitulo.getPages().get((position - 1)).getPageNumber()){
+                //recupero os mangas até achar o atual
+                for (int i = 0 ; i < manga.getCapitulos().size();i++){
+                    //verifica se é o atual
+                    if(capitulo.getUrl().equals(manga.getCapitulos().get(i).getUrl())){
+                        //verifica se existe um próximo
+                        if(i + 1 < manga.getCapitulos().size()){
+                            return new ScreenSlidePageFragment(activity, manga, manga.getCapitulos().get(i + 1), true, false);
+                        }else {
+                            return new ScreenSlidePageFragment(activity, manga, manga.getCapitulos().get(0), true, true);
+                        }
+                    }
+                }
             }
             return new ScreenSlidePageFragment(capitulo, null);
         }
@@ -110,10 +126,10 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
     private class SearchPages extends AsyncTask<Capitulo, Page, Void>{
 
-        //private int pageNumber;
+        private ScreenSlidePagerActivity activity;
 
-        public SearchPages(){
-
+        public SearchPages(ScreenSlidePagerActivity activity){
+            this.activity = activity;
         }
 
         @Override
@@ -150,7 +166,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
             }
             if(capitulo.getPages().size() == 2){
                 mPager = (ViewPager) findViewById(R.id.pager);
-                mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager());
+                mPagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), activity);
                 mPager.setAdapter(mPagerAdapter);
             }
 
