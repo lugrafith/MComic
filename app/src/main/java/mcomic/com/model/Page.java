@@ -2,13 +2,17 @@ package mcomic.com.model;
 
 import android.graphics.Bitmap;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 /**
  * Created by lu_gr on 08/02/2016.
  */
+@DatabaseTable(tableName = "pagina")
 public class Page extends AbstractModel {
 
     private  transient Bitmap bitmapImage;
-
+    @DatabaseField
     private int pageNumber;
 
     public Page(String url, Bitmap bitmapImage, int pageNumber) {

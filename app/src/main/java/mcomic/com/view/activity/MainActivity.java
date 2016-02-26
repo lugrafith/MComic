@@ -348,7 +348,7 @@ public class MainActivity extends AppCompatActivity
                 totalHeight += listItem.getMeasuredHeight();
             }
             ViewGroup.LayoutParams par = listViewCapitulos.getLayoutParams();
-            par.height = totalHeight + (listViewCapitulos.getDividerHeight() * (adapter.getCount() - 1));
+            par.height = totalHeight + (listViewCapitulos.getDividerHeight() * (adapter.getCount()));
             listViewCapitulos.setLayoutParams(par);
             listViewCapitulos.requestLayout();
         } else {

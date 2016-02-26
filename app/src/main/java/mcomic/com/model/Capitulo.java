@@ -1,16 +1,19 @@
 package mcomic.com.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.List;
-
+@DatabaseTable(tableName = "capitulo")
 public class Capitulo extends AbstractModel {
-
+    @DatabaseField
     private String nome;
-
+    //@ForeignCollectionField
     private List<Page> pages;
-
+    @DatabaseField
     private String urlPadraoCapitulo;
-
+    @DatabaseField
     private int totalPaginas;
 
     public Capitulo() {

@@ -19,13 +19,19 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import mcomic.com.core.Aplication;
+import mcomic.com.core.dao.AbstractDao;
+import mcomic.com.core.dao.FavoritoDao;
+import mcomic.com.core.dao.MangaDao;
+import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
 import mcomic.com.model.Capitulo;
+import mcomic.com.model.Favorito;
 import mcomic.com.model.Manga;
 import mcomic.com.model.Page;
 
@@ -67,6 +73,19 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         progressBarLoad.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
 
         textViewPageInfo.setText("Aguarde...");
+
+        try {
+            if(manga.getId() == 0){
+                Manga m = new MangaDao(new OrmliteOpenHelper(this)).getForUrl(manga.getUrl());
+                if(m != null){
+                    manga.setId(m.getId());
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+
         searchPages = new SearchPages(this);
         searchPages.execute();
     }
@@ -93,6 +112,18 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
         @Override
         public Fragment getItem(int position) {
             if(capitulo.getPages().size() > position){
+                //salva como favorito e grava a pagina atual
+                try {
+                    FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(activity));
+                    Favorito favorito = favoritoDao.getForManga(manga);
+                    if(favorito == null){
+                        favorito = new Favorito(manga, capitulo,capitulo.getPages().get((position)), false);
+                    }
+                    favoritoDao.insert(favorito);
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+
                 return new ScreenSlidePageFragment(capitulo, capitulo.getPages().get((position)));
             }else if(capitulo.getPages().size() == position && capitulo.getTotalPaginas() == capitulo.getPages().get((position - 1)).getPageNumber()){
                 //recupero os mangas até achar o atual
