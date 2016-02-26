@@ -52,9 +52,21 @@
                 android:id="@android:id/tabcontent"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-
                 <LinearLayout
-                    android:id="@+id/linearLayout"
+                    android:id="@+id/linearLayout_favoritos"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+                    <!--Start Favoritos e ultimos lidos -->
+                    <include
+                        layout="@layout/layout_favoritos"
+                        android:id="@+id/linearLayout_favoritos_container"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"/>
+                    <!-- END Favoritos e ultimos lidos -->
+                </LinearLayout>
+                <LinearLayout
+                    android:id="@+id/linearLayout_mangas"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">
@@ -71,7 +83,7 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearLayout2"
+                    android:id="@+id/linearLayout_detalhe_manga"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical">

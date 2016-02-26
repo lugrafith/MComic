@@ -104,20 +104,27 @@ public class MainActivity extends AppCompatActivity
         //Tabs
         tabHost = (TabHost) findViewById(R.id.tabHost);
         tabHost.setup();
-        TabHost.TabSpec tab = tabHost.newTabSpec("Mangas");
-        tab.setContent(R.id.linearLayout);
+        TabHost.TabSpec tab = tabHost.newTabSpec("Favoritos");
+        tab.setContent(R.id.linearLayout_favoritos);
         tab.setIndicator("");
         tabHost.addTab(tab);
 
-        tab = tabHost.newTabSpec("");
-        tab.setContent(R.id.linearLayout2);
+        tab = tabHost.newTabSpec("Mangas");
+        tab.setContent(R.id.linearLayout_mangas);
         tab.setIndicator("");
         tabHost.addTab(tab);
+
+        tab = tabHost.newTabSpec("Detalhe");
+        tab.setContent(R.id.linearLayout_detalhe_manga);
+        tab.setIndicator("");
+        tabHost.addTab(tab);
+
 
         TabWidget tabWidget = tabHost.getTabWidget();
         for (int i = 0; i < tabWidget.getChildCount(); ++i){
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
         }
+        tabHost.setCurrentTab(1);
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED);
         tabHost.setOnTabChangedListener(this);
 
@@ -241,8 +248,11 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-
-        if (id == R.id.nav_exit) {
+        if(id == R.id.nav_search){
+            tabHost.setCurrentTab(1);
+        }else if (id == R.id.nav_favorites) {
+            tabHost.setCurrentTab(0);
+        } else if (id == R.id.nav_exit) {
             finish();
         }
 
@@ -261,8 +271,8 @@ public class MainActivity extends AppCompatActivity
             serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
             serviceTask = new ServiceTask(new ServiceCentralManga(), this);
             serviceTask.execute(v.getEditableText().toString());
-            if (tabHost.getCurrentTab() != 0) {
-                tabHost.setCurrentTab(0);
+            if (tabHost.getCurrentTab() != 1) {
+                tabHost.setCurrentTab(1);
             }
         }
     }
@@ -308,7 +318,7 @@ public class MainActivity extends AppCompatActivity
         if (item.getManga().getImageCover() != null) {
             ((ScrollView) findViewById(R.id.scrollView_container)).setScrollX(0);
             ((ScrollView) findViewById(R.id.scrollView_container)).setScrollY(0);
-            tabHost.setCurrentTab(1);
+            tabHost.setCurrentTab(2);
 
             LinearLayout linearLayoutContainer = (LinearLayout) findViewById(R.id.linearLayout_containerDetalheManga);
             ImageButton imageButtonIconRead = (ImageButton) findViewById(R.id.imageButton_icon_read);
