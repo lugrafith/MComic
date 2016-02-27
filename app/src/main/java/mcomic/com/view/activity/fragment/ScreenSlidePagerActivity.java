@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -118,10 +119,19 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
                     Favorito favorito = favoritoDao.getForManga(manga);
                     if(favorito == null){
                         favorito = new Favorito(manga, capitulo,capitulo.getPages().get((position)), false);
+                    }else {
+                        manga.setId(favorito.getManga().getId());
+                        favorito.setManga(manga);
+                        capitulo.setId(favorito.getCapituloAtual().getId());
+                        favorito.setCapituloAtual(capitulo);
+                        capitulo.getPages().get((position)).setId(favorito.getPaginaAtual().getId());
+                        favorito.setUrl(manga.getUrl());
+                        favorito.setPaginaAtual(capitulo.getPages().get((position)));
                     }
                     favoritoDao.insert(favorito);
                 } catch (SQLException e) {
                     e.printStackTrace();
+                    Toast.makeText(activity, "ERRO : " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 }
 
                 return new ScreenSlidePageFragment(capitulo, capitulo.getPages().get((position)));

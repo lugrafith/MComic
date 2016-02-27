@@ -16,13 +16,4 @@ public class MangaDao extends AbstractDao<Manga> {
         super(helper, Manga.class);
     }
 
-    public Manga getForUrl(String url) throws SQLException {
-        HashMap<String, Object> map = new HashMap<>();
-        map.put("url", url);
-        List<Manga> mangas = super.getList(map);
-        if (mangas != null && mangas.size() > 0){
-            return mangas.get(0);
-        }
-        return  null;
-    }
 }

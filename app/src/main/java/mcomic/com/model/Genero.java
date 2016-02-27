@@ -1,8 +1,12 @@
 package mcomic.com.model;
 
-import java.util.List;
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
 
+import java.util.List;
+@DatabaseTable(tableName = "genero")
 public class Genero extends AbstractModel {
+	@DatabaseField
 	private String nome;
 	
 	private List<Manga> mangas;

@@ -1,11 +1,16 @@
 package mcomic.com.model;
 
+import com.j256.ormlite.field.DatabaseField;
+import com.j256.ormlite.table.DatabaseTable;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@DatabaseTable(tableName = "arte")
 public class Arte extends AbstractModel {
+	@DatabaseField
 	private String nome;
-	
+	@DatabaseField
 	private String descricao;
 	
 	private List<Manga> mangas;

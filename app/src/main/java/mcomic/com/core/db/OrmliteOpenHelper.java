@@ -8,11 +8,12 @@ import com.j256.ormlite.support.ConnectionSource;
 import com.j256.ormlite.table.TableUtils;
 
 import java.sql.SQLException;
-import java.util.List;
 
-import mcomic.com.mcomic.R;
+import mcomic.com.model.Arte;
+import mcomic.com.model.Autor;
 import mcomic.com.model.Capitulo;
 import mcomic.com.model.Favorito;
+import mcomic.com.model.Genero;
 import mcomic.com.model.Manga;
 import mcomic.com.model.Page;
 
@@ -22,7 +23,7 @@ import mcomic.com.model.Page;
 public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
 
     private static final String databaseName = "MComic";
-    private static final int databaseVersion = 3;
+    private static final int databaseVersion = 4;
 
     public OrmliteOpenHelper(Context context) {
         super(context, databaseName, null, databaseVersion);
@@ -31,6 +32,10 @@ public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
     @Override
     public void onCreate(SQLiteDatabase database, ConnectionSource connectionSource) {
         try {
+            TableUtils.createTable(connectionSource, Arte.class);
+            TableUtils.createTable(connectionSource, Autor.class);
+            TableUtils.createTable(connectionSource, Genero.class);
+
             TableUtils.createTable(connectionSource, Manga.class);
             TableUtils.createTable(connectionSource, Capitulo.class);
             TableUtils.createTable(connectionSource, Page.class);
@@ -47,6 +52,9 @@ public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
             TableUtils.dropTable(connectionSource, Capitulo.class, true);
             TableUtils.dropTable(connectionSource, Page.class, true);
             TableUtils.dropTable(connectionSource, Favorito.class, true);
+            TableUtils.dropTable(connectionSource, Arte.class, true);
+            TableUtils.dropTable(connectionSource, Autor.class, true);
+            TableUtils.dropTable(connectionSource, Genero.class, true);
         } catch (SQLException e) {
             e.printStackTrace();
         }

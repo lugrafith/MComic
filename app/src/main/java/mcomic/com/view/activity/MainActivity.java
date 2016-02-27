@@ -34,17 +34,27 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import mcomic.com.core.Aplication;
 import mcomic.com.core.ServiceTask;
 import mcomic.com.core.ServiceTaskMangaInfo;
+import mcomic.com.core.dao.FavoritoDao;
+import mcomic.com.core.dao.MangaDao;
+import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
+import mcomic.com.model.Favorito;
+import mcomic.com.model.Manga;
 import mcomic.com.view.activity.fragment.ScreenSlidePagerActivity;
 import mcomic.com.view.component.adapter.CapituloAdapter;
 import mcomic.com.view.component.adapter.GeneroAdapter;
@@ -252,6 +262,42 @@ public class MainActivity extends AppCompatActivity
             tabHost.setCurrentTab(1);
         }else if (id == R.id.nav_favorites) {
             tabHost.setCurrentTab(0);
+            FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(this));
+            try {
+                List<Favorito> favoritos = favoritoDao.listAll();
+                if(favoritos != null || favoritos.size() != 0){
+                    //((RelativeLayout) findViewById(R.id.container_favoritos)).setVisibility(View.INVISIBLE);
+                    List<Manga> mangasLidos = new ArrayList();
+                    List<Manga> mangasFavoritos = new ArrayList();
+                    for (Favorito f : favoritos){
+                        if(f.isFavorito()){
+                            mangasFavoritos.add(f.getManga());
+                        }else {
+                            mangasLidos.add(f.getManga());
+                        }
+                    }
+                    MangaAdapter mangaAdapterFavoritos = new MangaAdapter(this, mangasFavoritos);
+                    MangaAdapter mangaAdapterLidos = new MangaAdapter(this, mangasLidos);
+                    GridView gridViewFavoritos = (GridView) findViewById(R.id.gridView_mangas_favoritos);
+                    GridView gridViewLidos = (GridView) findViewById(R.id.gridView_mangas_lidos);
+                    gridViewFavoritos.setAdapter(mangaAdapterFavoritos);
+                    gridViewFavoritos.setOnItemClickListener(this);
+                    gridViewLidos.setAdapter(mangaAdapterLidos);
+                    gridViewLidos.setOnItemClickListener(this);
+                    cancelServices();
+                    //serviceTaskMangaInfo.cancel(true);
+                    serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
+                    serviceTaskMangaInfo.execute((MangaAdapter) gridViewFavoritos.getAdapter());
+                    serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
+                    serviceTaskMangaInfo.execute((MangaAdapter) gridViewLidos.getAdapter());
+                }else {
+                    //((RelativeLayout) findViewById(R.id.container_favoritos)).setVisibility(View.VISIBLE);
+                    //TODO
+                }
+            } catch (SQLException e) {
+                Toast.makeText(MainActivity.this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
         } else if (id == R.id.nav_exit) {
             finish();
         }

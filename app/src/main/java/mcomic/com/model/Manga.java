@@ -22,9 +22,9 @@ public class Manga extends AbstractModel {
     private String sinopse;
     @DatabaseField
     private String ano;
-    //@DatabaseField
+    @DatabaseField(foreign = true)
     private Arte arte;
-    //@DatabaseField
+    @DatabaseField(foreign = true)
     private Autor autor;
     //@ForeignCollectionField
     private List<Genero> generos;
@@ -34,6 +34,8 @@ public class Manga extends AbstractModel {
     private transient Bitmap imageCover;
 
     public Manga() {
+        capitulos = new ArrayList<>();
+        generos = new ArrayList<>();
     }
 
     public Manga(Source source) {

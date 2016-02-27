@@ -26,6 +26,7 @@ public class Favorito extends AbstractModel{
         this.capituloAtual = capituloAtual;
         this.paginaAtual = paginaAtual;
         this.favorito = favorito;
+        setUrl(manga.getUrl());
     }
 
     public Manga getManga() {

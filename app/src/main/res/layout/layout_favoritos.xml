@@ -19,6 +19,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="@color/grey" />
         <RelativeLayout
+            android:id="@+id/container_favoritos"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <GridView
@@ -30,12 +31,6 @@
                 android:numColumns="auto_fit"
                 android:stretchMode="columnWidth" />
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar2"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
         </RelativeLayout>
 
         <TextView
@@ -58,12 +53,6 @@
                 android:numColumns="auto_fit"
                 android:stretchMode="columnWidth" />
 
-            <ProgressBar
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/progressBar3"
-                android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true" />
         </RelativeLayout>
     </LinearLayout>
 </LinearLayout>
