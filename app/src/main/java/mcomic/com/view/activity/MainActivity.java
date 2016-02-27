@@ -27,6 +27,7 @@ import android.view.ViewGroup;
 import android.view.ViewStub;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -376,6 +377,7 @@ public class MainActivity extends AppCompatActivity
             TextView textViewSinopse = (TextView) findViewById(R.id.textView_sinopse);
             GridView gridViewGenero = (GridView) findViewById(R.id.gridView_generos);
             ListView listViewCapitulos = (ListView) findViewById(R.id.listView_capitulos);
+            Button buttonFavoritar = (Button) findViewById(R.id.button_favoritar);
 
             Drawable backgroundF = new BitmapDrawable(getResources(), item.getManga().getImageCover());
             linearLayoutContainer.setBackground(backgroundF);
@@ -407,8 +409,45 @@ public class MainActivity extends AppCompatActivity
             par.height = totalHeight + (listViewCapitulos.getDividerHeight() * (adapter.getCount()));
             listViewCapitulos.setLayoutParams(par);
             listViewCapitulos.requestLayout();
+
+
+            alterarButtonfavorito(item, buttonFavoritar);
+            buttonFavoritar.setOnClickListener(getClick(item    ));
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private View.OnClickListener getClick(final ViewMangaItem item){
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alterarButtonfavorito(item, (Button)v);
+            }
+        };
+    }
+
+    private void alterarButtonfavorito(ViewMangaItem item, Button buttonFavoritar){
+        FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(this));
+        MangaDao mangaDao = new MangaDao(new OrmliteOpenHelper(this));
+        try {
+            Manga m = mangaDao.getForUrl(item.getManga().getUrl());
+            if(m != null){
+                item.getManga().setId(m.getId());
+                Favorito f = favoritoDao.getForManga(item.getManga());
+                if(f != null){
+                    buttonFavoritar.setBackgroundColor(Color.RED);
+                    buttonFavoritar.setText("- Favorito");
+                }else {
+                    buttonFavoritar.setBackgroundColor(Color.BLACK);
+                    buttonFavoritar.setText("+ Favorito");
+                }
+            }else {
+                buttonFavoritar.setBackgroundColor(Color.BLACK);
+                buttonFavoritar.setText("+ Favorito");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
