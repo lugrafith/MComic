@@ -6,7 +6,7 @@ import com.j256.ormlite.table.DatabaseTable;
 import java.util.ArrayList;
 import java.util.List;
 
-@DatabaseTable(tableName = "arte")
+@DatabaseTable
 public class Arte extends AbstractModel {
 	@DatabaseField
 	private String nome;

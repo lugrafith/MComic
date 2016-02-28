@@ -8,7 +8,7 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * Created by lu_gr on 08/02/2016.
  */
-@DatabaseTable(tableName = "pagina")
+@DatabaseTable
 public class Page extends AbstractModel {
 
     private  transient Bitmap bitmapImage;

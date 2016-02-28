@@ -1,6 +1,5 @@
 package mcomic.com.core.dao;
 
-import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.model.Capitulo;
 
 /**
@@ -8,7 +7,7 @@ import mcomic.com.model.Capitulo;
  */
 public class CapituloDao extends AbstractDao<Capitulo> {
 
-    public CapituloDao(OrmliteOpenHelper helper) {
-        super(helper, Capitulo.class);
+    public CapituloDao() {
+        super(Capitulo.class);
     }
 }

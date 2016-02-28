@@ -6,15 +6,15 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import mcomic.com.core.db.OrmliteOpenHelper;
-import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.core.ServiceTask;
+import mcomic.com.core.db.DataBaseManager;
+import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
 
 /**
@@ -37,6 +37,8 @@ public class LoadContentActivity extends AppCompatActivity {
         progressBar = (ProgressBar) findViewById(R.id.progressBar_loading);
         progressBar.getIndeterminateDrawable().setColorFilter(Color.RED, PorterDuff.Mode.SRC_IN);
         ServiceCentralManga serviceCentralManga = new ServiceCentralManga();
+
+        DataBaseManager.init(this.getApplicationContext());
 
         serviceTask = new ServiceTask(serviceCentralManga, this);
         serviceTask.execute("");

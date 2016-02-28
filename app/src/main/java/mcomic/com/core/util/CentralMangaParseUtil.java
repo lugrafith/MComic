@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mcomic.com.core.Aplication;
+import mcomic.com.model.MangaCentral;
 import mcomic.com.model.Source;
 import mcomic.com.model.Arte;
 import mcomic.com.model.Autor;
@@ -37,7 +38,7 @@ public final class CentralMangaParseUtil {
         String endMAnga = "</tbody></table>";
         while (html.indexOf(startManga) > -1) {
             String mangaHTML = html.substring(html.indexOf(startManga), html.lastIndexOf(endMAnga));
-            Manga manga = new Manga(Source.CENTRAL_DE_MANGAS);
+            Manga manga = new MangaCentral();
             manga.setUrl(mangaHTML.substring(mangaHTML.indexOf(startUrl_CENTRAL) + startUrl_CENTRAL.length(), mangaHTML.indexOf(endUrl_CENTRAL)));
             String startTitle = "<a href=\"" + manga.getUrl() + "\">";
             String endTitle = "</a></td>";

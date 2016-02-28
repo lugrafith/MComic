@@ -35,7 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TabHost;
 import android.widget.TabWidget;
@@ -51,7 +50,6 @@ import mcomic.com.core.ServiceTask;
 import mcomic.com.core.ServiceTaskMangaInfo;
 import mcomic.com.core.dao.FavoritoDao;
 import mcomic.com.core.dao.MangaDao;
-import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
 import mcomic.com.model.Favorito;
@@ -132,7 +130,7 @@ public class MainActivity extends AppCompatActivity
 
 
         TabWidget tabWidget = tabHost.getTabWidget();
-        for (int i = 0; i < tabWidget.getChildCount(); ++i){
+        for (int i = 0; i < tabWidget.getChildCount(); ++i) {
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.TRANSPARENT);
         }
         tabHost.setCurrentTab(1);
@@ -145,8 +143,7 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-
-    private TextWatcher getTextWatcher(){
+    private TextWatcher getTextWatcher() {
         return new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -170,13 +167,15 @@ public class MainActivity extends AppCompatActivity
             }
         };
     }
+
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        if(event != null){
+        if (event != null) {
             search(v);
         }
         return false;
     }
+
     @Override
     public void onConfigurationChanged(Configuration newConfig) {
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -187,21 +186,21 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public int getScreenOrientation()
-    {
+    public int getScreenOrientation() {
         Display getOrient = getWindowManager().getDefaultDisplay();
         int orientation = Configuration.ORIENTATION_UNDEFINED;
-        if(getOrient.getWidth()==getOrient.getHeight()){
+        if (getOrient.getWidth() == getOrient.getHeight()) {
             orientation = Configuration.ORIENTATION_SQUARE;
-        } else{
-            if(getOrient.getWidth() < getOrient.getHeight()){
+        } else {
+            if (getOrient.getWidth() < getOrient.getHeight()) {
                 orientation = Configuration.ORIENTATION_PORTRAIT;
-            }else {
+            } else {
                 orientation = Configuration.ORIENTATION_LANDSCAPE;
             }
         }
         return orientation;
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState, PersistableBundle outPersistentState) {
         super.onSaveInstanceState(outState, outPersistentState);
@@ -223,9 +222,9 @@ public class MainActivity extends AppCompatActivity
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
         } else {
-            if(tabHost.getCurrentTab() > 0){
+            if (tabHost.getCurrentTab() > 0) {
                 tabHost.setCurrentTab(tabHost.getCurrentTab() - 1);
-            }else {
+            } else {
                 cancelServices();
                 super.onBackPressed();
             }
@@ -259,41 +258,54 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        if(id == R.id.nav_search){
+        if (id == R.id.nav_search) {
             tabHost.setCurrentTab(1);
-        }else if (id == R.id.nav_favorites) {
+        } else if (id == R.id.nav_favorites) {
+            GridView gridViewFavoritos = (GridView) findViewById(R.id.gridView_mangas_favoritos);
+            GridView gridViewLidos = (GridView) findViewById(R.id.gridView_mangas_lidos);
+            TextView textViewFav = (TextView) findViewById(R.id.textView_infoFavorito);
+            TextView textViewLido = (TextView) findViewById(R.id.textView_infoLido);
             tabHost.setCurrentTab(0);
-            FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(this));
+            FavoritoDao favoritoDao = new FavoritoDao();
             try {
                 List<Favorito> favoritos = favoritoDao.listAll();
-                if(favoritos != null || favoritos.size() != 0){
-                    //((RelativeLayout) findViewById(R.id.container_favoritos)).setVisibility(View.INVISIBLE);
+                if (favoritos != null && favoritos.size() > 0) {
                     List<Manga> mangasLidos = new ArrayList();
                     List<Manga> mangasFavoritos = new ArrayList();
-                    for (Favorito f : favoritos){
-                        if(f.isFavorito()){
+                    for (Favorito f : favoritos) {
+                        if (f.isFavorito()) {
                             mangasFavoritos.add(f.getManga());
-                        }else {
+                        } else {
                             mangasLidos.add(f.getManga());
                         }
                     }
-                    MangaAdapter mangaAdapterFavoritos = new MangaAdapter(this, mangasFavoritos);
-                    MangaAdapter mangaAdapterLidos = new MangaAdapter(this, mangasLidos);
-                    GridView gridViewFavoritos = (GridView) findViewById(R.id.gridView_mangas_favoritos);
-                    GridView gridViewLidos = (GridView) findViewById(R.id.gridView_mangas_lidos);
-                    gridViewFavoritos.setAdapter(mangaAdapterFavoritos);
-                    gridViewFavoritos.setOnItemClickListener(this);
-                    gridViewLidos.setAdapter(mangaAdapterLidos);
-                    gridViewLidos.setOnItemClickListener(this);
                     cancelServices();
-                    //serviceTaskMangaInfo.cancel(true);
-                    serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
-                    serviceTaskMangaInfo.execute((MangaAdapter) gridViewFavoritos.getAdapter());
-                    serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
-                    serviceTaskMangaInfo.execute((MangaAdapter) gridViewLidos.getAdapter());
-                }else {
-                    //((RelativeLayout) findViewById(R.id.container_favoritos)).setVisibility(View.VISIBLE);
-                    //TODO
+                    if(mangasFavoritos.size() > 0){
+                        textViewFav.setVisibility(View.INVISIBLE);
+                        MangaAdapter mangaAdapterFavoritos = new MangaAdapter(this, mangasFavoritos);
+                        gridViewFavoritos.setAdapter(mangaAdapterFavoritos);
+                        gridViewFavoritos.setOnItemClickListener(this);
+                        serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
+                        serviceTaskMangaInfo.execute((MangaAdapter) gridViewFavoritos.getAdapter());
+                    }else {
+                        textViewFav.setVisibility(View.VISIBLE);
+                    }
+                    if(mangasLidos.size() > 0){
+                        textViewLido.setVisibility(View.INVISIBLE);
+                        MangaAdapter mangaAdapterLidos = new MangaAdapter(this, mangasLidos);
+                        gridViewLidos.setAdapter(mangaAdapterLidos);
+                        gridViewLidos.setOnItemClickListener(this);
+                        serviceTaskMangaInfo = new ServiceTaskMangaInfo(this);
+                        serviceTaskMangaInfo.execute((MangaAdapter) gridViewLidos.getAdapter());
+                    }else{
+                        textViewLido.setVisibility(View.VISIBLE);
+                    }
+                } else {
+                    MangaAdapter mangaAdapter = new MangaAdapter(this, new ArrayList<Manga>());
+                    gridViewFavoritos.setAdapter(mangaAdapter);
+                    gridViewLidos.setAdapter(mangaAdapter);
+                    textViewFav.setVisibility(View.VISIBLE);
+                    textViewLido.setVisibility(View.VISIBLE);
                 }
             } catch (SQLException e) {
                 Toast.makeText(MainActivity.this, "Erro: " + e.getMessage(), Toast.LENGTH_SHORT).show();
@@ -308,7 +320,7 @@ public class MainActivity extends AppCompatActivity
         return true;
     }
 
-    private void search(TextView v){
+    private void search(TextView v) {
         if (!v.getEditableText().toString().equals("")) {
             progressBar.setVisibility(View.VISIBLE);
             if (serviceTask != null) {
@@ -324,33 +336,33 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public void cancelServices(){
-        if(serviceTaskMangaInfo != null && !serviceTaskMangaInfo.isCancelled()){
+    public void cancelServices() {
+        if (serviceTaskMangaInfo != null && !serviceTaskMangaInfo.isCancelled()) {
             serviceTaskMangaInfo.cancel(true);
         }
-        if(serviceTask != null && !serviceTask.isCancelled()){
+        if (serviceTask != null && !serviceTask.isCancelled()) {
             serviceTask.cancel(true);
         }
     }
 
-    public void execute(){
+    public void execute() {
         System.out.print("FINISH");
         gridViewMangas.setAdapter(new MangaAdapter(this, Aplication.getMangas()));
         setInfoManga();
-        if(Aplication.getMangas() == null || Aplication.getMangas().size() == 0){
+        if (Aplication.getMangas() == null || Aplication.getMangas().size() == 0) {
             info.setText("Nenhum manga encontrado com o titulo " + editTextSearch.getText());
-        }else {
+        } else {
             info.setText("");
         }
     }
 
-    private void setInfoManga(){
+    private void setInfoManga() {
         serviceTaskMangaInfo.execute((MangaAdapter) gridViewMangas.getAdapter());
     }
 
     @Override
     public void onTabChanged(String tabId) {
-        for(int i=0;i<tabHost.getTabWidget().getChildCount();i++){
+        for (int i = 0; i < tabHost.getTabWidget().getChildCount(); i++) {
             tabHost.getTabWidget().getChildAt(i).setBackgroundColor(Color.TRANSPARENT); //unselected
         }
         tabHost.getTabWidget().getChildAt(tabHost.getCurrentTab()).setBackgroundColor(Color.RED); // selected
@@ -372,7 +384,7 @@ public class MainActivity extends AppCompatActivity
             ImageButton imageButtonShare = (ImageButton) findViewById(R.id.imageButton_share);
             ImageButton imageButtonBack = (ImageButton) findViewById(R.id.imageButton_back);
             TextView textViewMangaTitle = (TextView) findViewById(R.id.textView_title);
-            TextView textViewAutor= (TextView) findViewById(R.id.textView_autor);
+            TextView textViewAutor = (TextView) findViewById(R.id.textView_autor);
             TextView textViewArte = (TextView) findViewById(R.id.textView_arte);
             TextView textViewSinopse = (TextView) findViewById(R.id.textView_sinopse);
             GridView gridViewGenero = (GridView) findViewById(R.id.gridView_generos);
@@ -412,37 +424,58 @@ public class MainActivity extends AppCompatActivity
 
 
             alterarButtonfavorito(item, buttonFavoritar);
-            buttonFavoritar.setOnClickListener(getClick(item    ));
+            buttonFavoritar.setOnClickListener(getClick(item));
         } else {
             Toast.makeText(MainActivity.this, "Aguarde..", Toast.LENGTH_SHORT).show();
         }
     }
 
-    private View.OnClickListener getClick(final ViewMangaItem item){
+    private View.OnClickListener getClick(final ViewMangaItem item) {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                alterarButtonfavorito(item, (Button)v);
+                FavoritoDao favoritoDao = new FavoritoDao();
+                try {
+                    Favorito favorito = favoritoDao.getForUrl(item.getManga().getUrl());
+                    if (favorito != null) {
+                        if(((Button)v).getText().toString().indexOf("-") > -1){
+                            favoritoDao.delete(favorito);
+                        }else{
+                            favorito.setFavorito(true);
+                            favoritoDao.insert(favorito);
+                        }
+                    } else {
+                        favorito = new Favorito(item.getManga(),
+                                null,
+                                null,
+                                true);
+                        favoritoDao.insert(favorito);
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    Toast.makeText(MainActivity.this, "Erro : " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                }
+                alterarButtonfavorito(item, (Button) v);
             }
         };
     }
 
-    private void alterarButtonfavorito(ViewMangaItem item, Button buttonFavoritar){
-        FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(this));
-        MangaDao mangaDao = new MangaDao(new OrmliteOpenHelper(this));
+    private void alterarButtonfavorito(ViewMangaItem item, Button buttonFavoritar) {
+        FavoritoDao favoritoDao = new FavoritoDao();
+        MangaDao mangaDao = new MangaDao();
         try {
             Manga m = mangaDao.getForUrl(item.getManga().getUrl());
-            if(m != null){
+            if (m != null) {
                 item.getManga().setId(m.getId());
-                Favorito f = favoritoDao.getForManga(item.getManga());
-                if(f != null){
+                Favorito f = favoritoDao.getForUrl(item.getManga().getUrl());
+                if (f != null && f.isFavorito()) {
                     buttonFavoritar.setBackgroundColor(Color.RED);
                     buttonFavoritar.setText("- Favorito");
-                }else {
+                } else {
                     buttonFavoritar.setBackgroundColor(Color.BLACK);
                     buttonFavoritar.setText("+ Favorito");
                 }
-            }else {
+            } else {
                 buttonFavoritar.setBackgroundColor(Color.BLACK);
                 buttonFavoritar.setText("+ Favorito");
             }
@@ -451,7 +484,7 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    private View.OnClickListener voltar(){
+    private View.OnClickListener voltar() {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -460,9 +493,9 @@ public class MainActivity extends AppCompatActivity
         };
     }
 
-    private View.OnClickListener getClickCapitulos(final ViewMangaItem item){
+    private View.OnClickListener getClickCapitulos(final ViewMangaItem item) {
         final MainActivity activity = this;
-        return  new View.OnClickListener() {
+        return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(activity, ScreenSlidePagerActivity.class);

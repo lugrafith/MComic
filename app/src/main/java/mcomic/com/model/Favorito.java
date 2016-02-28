@@ -6,9 +6,9 @@ import com.j256.ormlite.table.DatabaseTable;
 /**
  * Created by lu_gr on 25/02/2016.
  */
-@DatabaseTable(tableName = "favorito")
+@DatabaseTable
 public class Favorito extends AbstractModel{
-    @DatabaseField(foreign = true, unique = true)
+    @DatabaseField(foreign = true)
     private Manga manga;
     @DatabaseField(foreign = true)
     private Capitulo capituloAtual;

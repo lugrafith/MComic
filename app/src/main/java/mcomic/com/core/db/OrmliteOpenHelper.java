@@ -15,18 +15,19 @@ import mcomic.com.model.Capitulo;
 import mcomic.com.model.Favorito;
 import mcomic.com.model.Genero;
 import mcomic.com.model.Manga;
+import mcomic.com.model.MangaCentral;
 import mcomic.com.model.Page;
 
 /**
  * Created by lu_gr on 25/02/2016.
  */
-public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
+class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
 
-    private static final String databaseName = "MComic";
-    private static final int databaseVersion = 4;
+    private static final String DATABASE_NAME = "MComic";
+    private static final int DATABASE_VERSION = 3;
 
     public OrmliteOpenHelper(Context context) {
-        super(context, databaseName, null, databaseVersion);
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
     @Override
@@ -35,8 +36,8 @@ public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
             TableUtils.createTable(connectionSource, Arte.class);
             TableUtils.createTable(connectionSource, Autor.class);
             TableUtils.createTable(connectionSource, Genero.class);
-
             TableUtils.createTable(connectionSource, Manga.class);
+
             TableUtils.createTable(connectionSource, Capitulo.class);
             TableUtils.createTable(connectionSource, Page.class);
             TableUtils.createTable(connectionSource, Favorito.class);
@@ -48,13 +49,13 @@ public class OrmliteOpenHelper extends OrmLiteSqliteOpenHelper{
     @Override
     public void onUpgrade(SQLiteDatabase database, ConnectionSource connectionSource, int oldVersion, int newVersion) {
         try {
-            TableUtils.dropTable(connectionSource, Manga.class, true);
-            TableUtils.dropTable(connectionSource, Capitulo.class, true);
-            TableUtils.dropTable(connectionSource, Page.class, true);
-            TableUtils.dropTable(connectionSource, Favorito.class, true);
-            TableUtils.dropTable(connectionSource, Arte.class, true);
-            TableUtils.dropTable(connectionSource, Autor.class, true);
-            TableUtils.dropTable(connectionSource, Genero.class, true);
+            TableUtils.dropTable(connectionSource, Capitulo.class, false);
+            TableUtils.dropTable(connectionSource, Page.class, false);
+            TableUtils.dropTable(connectionSource, Favorito.class, false);
+            TableUtils.dropTable(connectionSource, Arte.class, false);
+            TableUtils.dropTable(connectionSource, Autor.class, false);
+            TableUtils.dropTable(connectionSource, Genero.class, false);
+            TableUtils.dropTable(connectionSource, Manga.class, false);
         } catch (SQLException e) {
             e.printStackTrace();
         }

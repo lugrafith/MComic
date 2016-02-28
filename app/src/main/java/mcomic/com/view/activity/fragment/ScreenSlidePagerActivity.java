@@ -1,7 +1,5 @@
 package mcomic.com.view.activity.fragment;
 
-import android.app.FragmentManager;
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
@@ -21,14 +19,10 @@ import android.widget.Toast;
 
 import java.io.IOException;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import mcomic.com.core.Aplication;
-import mcomic.com.core.dao.AbstractDao;
 import mcomic.com.core.dao.FavoritoDao;
 import mcomic.com.core.dao.MangaDao;
-import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.core.service.ServiceCentralManga;
 import mcomic.com.mcomic.R;
 import mcomic.com.model.Capitulo;
@@ -77,7 +71,7 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
 
         try {
             if(manga.getId() == 0){
-                Manga m = new MangaDao(new OrmliteOpenHelper(this)).getForUrl(manga.getUrl());
+                Manga m = new MangaDao().getForUrl(manga.getUrl());
                 if(m != null){
                     manga.setId(m.getId());
                 }
@@ -115,18 +109,22 @@ public class ScreenSlidePagerActivity extends FragmentActivity {
             if(capitulo.getPages().size() > position){
                 //salva como favorito e grava a pagina atual
                 try {
-                    FavoritoDao favoritoDao = new FavoritoDao(new OrmliteOpenHelper(activity));
-                    Favorito favorito = favoritoDao.getForManga(manga);
+                    FavoritoDao favoritoDao = new FavoritoDao();
+                    Favorito favorito = favoritoDao.getForUrl(manga.getUrl());
                     if(favorito == null){
                         favorito = new Favorito(manga, capitulo,capitulo.getPages().get((position)), false);
                     }else {
                         manga.setId(favorito.getManga().getId());
                         favorito.setManga(manga);
-                        capitulo.setId(favorito.getCapituloAtual().getId());
+                        if(favorito.getCapituloAtual() != null){
+                            capitulo.setId(favorito.getCapituloAtual().getId());
+                        }
                         favorito.setCapituloAtual(capitulo);
-                        capitulo.getPages().get((position)).setId(favorito.getPaginaAtual().getId());
-                        favorito.setUrl(manga.getUrl());
+                        if(favorito.getPaginaAtual() != null){
+                            capitulo.getPages().get((position)).setId(favorito.getPaginaAtual().getId());
+                        }
                         favorito.setPaginaAtual(capitulo.getPages().get((position)));
+                        favorito.setUrl(manga.getUrl());
                     }
                     favoritoDao.insert(favorito);
                 } catch (SQLException e) {

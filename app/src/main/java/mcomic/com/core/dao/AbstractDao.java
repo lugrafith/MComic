@@ -1,13 +1,12 @@
 package mcomic.com.core.dao;
 
-import com.j256.ormlite.dao.Dao;
+import android.annotation.SuppressLint;
 
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
-import mcomic.com.core.db.OrmliteOpenHelper;
+import mcomic.com.core.db.DataBaseManager;
 import mcomic.com.model.AbstractModel;
 
 /**
@@ -15,26 +14,28 @@ import mcomic.com.model.AbstractModel;
  */
 public abstract class AbstractDao<T extends AbstractModel> {
 
-    private OrmliteOpenHelper helper;
+    private DataBaseManager dataBase;
     private  Class classe;
 
-    public AbstractDao(OrmliteOpenHelper helper, Class classe){
+    @SuppressLint("NewApi")
+    public AbstractDao(Class classe){
         this.classe = classe;
-        this.helper = helper;
+        this.dataBase = DataBaseManager.getInstance();
+        this.dataBase.getHelper().setWriteAheadLoggingEnabled(true);
     }
 
     public T insert(T persist) throws SQLException {
         if(persist.getId() != 0){
-            int id =  helper.getDao(classe).update(persist);
+            int id =  this.dataBase.getHelper().getDao(classe).update(persist);
             persist.setId(id);
         }else {
             //busca pela URL
             T t = getForUrl(persist.getUrl());
             if(t != null){
                 persist.setId(t.getId());
-                helper.getDao(classe).update(persist);
+                this.dataBase.getHelper().getDao(classe).update(persist);
             }else {
-                int id = helper.getDao(classe).create(persist);
+                int id = this.dataBase.getHelper().getDao(classe).create(persist);
             }
         }
         System.out.println("Salvando : " + getClasse() + " -> " + persist);
@@ -42,31 +43,38 @@ public abstract class AbstractDao<T extends AbstractModel> {
     }
 
     public List<T> listAll() throws SQLException {
-        return  getHelper().getDao(getClasse()).queryForAll();
+        return  this.dataBase.getHelper().getDao(getClasse()).queryForAll();
     }
 
     protected List<T> getList(HashMap<String, Object> mapValues) throws SQLException {
-        return  getHelper().getDao(getClasse()).queryForFieldValuesArgs(mapValues);
+        return  this.dataBase.getHelper().getDao(getClasse()).queryForFieldValuesArgs(mapValues);
     }
     public T get(long id) throws SQLException {
-        return (T) getHelper().getDao(getClasse()).queryForId(id);
+        return (T) this.dataBase.getHelper().getDao(getClasse()).queryForId(id);
     }
 
     public T getForUrl(String url) throws SQLException {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("url", url);
-        List<T> list = getHelper().getDao(getClasse()).queryForFieldValues(map);
-        if(list != null && list.size() > 0){
-            return  list.get(0);
+        if(url != null){
+            HashMap<String, String> map = new HashMap<>();
+            map.put("url", url);
+            List<T> list = this.dataBase.getHelper().getDao(getClasse()).queryForFieldValues(map);
+            if(list != null && list.size() > 0){
+                return  list.get(0);
+            }
         }
         return null;
     }
 
-    protected OrmliteOpenHelper getHelper() {
-        return helper;
+
+    public void delete(T persist) throws SQLException {
+        this.dataBase.getHelper().getDao(getClasse()).delete(persist);
     }
 
     protected Class getClasse() {
         return classe;
+    }
+
+    public DataBaseManager getDataBase() {
+        return dataBase;
     }
 }

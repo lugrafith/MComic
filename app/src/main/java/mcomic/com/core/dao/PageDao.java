@@ -1,6 +1,5 @@
 package mcomic.com.core.dao;
 
-import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.model.Page;
 
 /**
@@ -8,7 +7,7 @@ import mcomic.com.model.Page;
  */
 public class PageDao extends AbstractDao<Page> {
 
-    public PageDao(OrmliteOpenHelper helper) {
-        super(helper, Page.class);
+    public PageDao() {
+        super(Page.class);
     }
 }

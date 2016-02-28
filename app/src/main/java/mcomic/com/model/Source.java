@@ -3,15 +3,15 @@ package mcomic.com.model;
 public enum Source {
 
 	CENTRAL_DE_MANGAS("Central de Mangas","http://centraldemangas.org", "http://mangas.centraldemangas.com.br", "/mangas/search?q=");
-	
+
 	private String name;
-	
+
 	private String url;
 
 	private String urlSubdomain;
-	
+
 	private String search;
-	
+
 	private Source(String name, String url,String urlSubdomain, String search){
 		this.name = name;
 		this.url = url;

@@ -1,10 +1,5 @@
 package mcomic.com.core.dao;
 
-import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.List;
-
-import mcomic.com.core.db.OrmliteOpenHelper;
 import mcomic.com.model.Manga;
 
 /**
@@ -12,8 +7,8 @@ import mcomic.com.model.Manga;
  */
 public class MangaDao extends AbstractDao<Manga> {
 
-    public MangaDao(OrmliteOpenHelper helper) {
-        super(helper, Manga.class);
+    public MangaDao() {
+        super(Manga.class);
     }
 
 }
